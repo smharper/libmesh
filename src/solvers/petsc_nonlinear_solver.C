@@ -112,8 +112,6 @@ extern "C"
     X_global.swap(X_sys);
     R.swap(R_sys);
 
-    sys.get_dof_map().enforce_constraints_exactly(sys);
-
     sys.update();
 
     //Swap back
@@ -207,7 +205,6 @@ extern "C"
     X_global.swap(X_sys);
     Jac.swap(Jac_sys);
 
-    sys.get_dof_map().enforce_constraints_exactly(sys);
     sys.update();
 
     X_global.swap(X_sys);
