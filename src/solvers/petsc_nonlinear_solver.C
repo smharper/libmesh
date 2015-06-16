@@ -247,6 +247,64 @@ extern "C"
     return ierr;
   }
 
+  // This function gets called by PETSc after the SNES linesearch is
+  // complete.  We use it to exactly enforce any constraints on the
+  // solution which may have drifted during the linear solve.  In the
+  // PETSc nomenclature:
+  // * "x" is the old solution vector,
+  // * "y" is the search direction (Newton step) vector,
+  // * "w" is the candidate solution vector, and
+  // the user is responsible for setting changed_y and changed_w
+  // appropriately, depending on whether or not the search
+  // direction or solution vector was changed, respectively.
+  PetscErrorCode __libmesh_petsc_snes_postcheck(
+#if PETSC_VERSION_LESS_THAN(3,3,0)
+                                                SNES, Vec /*x*/, Vec /*y*/, Vec w, void *context, PetscBool *changed_y, PetscBool *changed_w
+#else
+                                                SNESLineSearch, Vec /*x*/, Vec /*y*/, Vec w, PetscBool *changed_y, PetscBool *changed_w, void *context
+#endif
+                                                )
+  {
+    START_LOG("postcheck()", "PetscNonlinearSolver");
+
+    PetscErrorCode ierr = 0;
+
+    libmesh_assert(context);
+
+    // Cast the context to a NonlinearSolver object.
+    PetscNonlinearSolver<Number>* solver =
+      static_cast<PetscNonlinearSolver<Number>*> (context);
+
+    // Get a reference to the System and its DofMap, and possibly
+    // enforce the constraints on it.
+    NonlinearImplicitSystem & sys = solver->system();
+    DofMap & dof_map = sys.get_dof_map();
+    if (dof_map.n_constrained_dofs())
+      {
+        // PETSc wants us to update the incoming w vector, so wrap it...
+        PetscVector<Number> & system_soln = *cast_ptr<PetscVector<Number>*>(sys.solution.get());
+        PetscVector<Number> petsc_soln(w, sys.comm());
+
+        // ... and swap it in before enforcing the constraints.
+        petsc_soln.swap(system_soln);
+
+        dof_map.enforce_constraints_exactly(sys);
+
+        // If we have constraints, we'll assume that we did change the solution w (hopefully slightly).
+        *changed_w = PETSC_TRUE;
+
+        // Swap back
+        petsc_soln.swap(system_soln);
+      }
+
+    // We do not change the search direction, y.
+    *changed_y = PETSC_FALSE;
+
+    STOP_LOG("postcheck()", "PetscNonlinearSolver");
+
+    return ierr;
+  }
+
 } // end extern "C"
 //---------------------------------------------------------------------
 
@@ -384,6 +442,30 @@ void PetscNonlinearSolver<T>::init (const char* name)
           PCShellSetApply(pc,__libmesh_petsc_preconditioner_apply);
         }
     }
+
+
+  // Tell PETSc about our linesearch "post-check" function.
+  {
+#if PETSC_VERSION_LESS_THAN(3,3,0)
+  PetscErrorCode ierr = SNESLineSearchSetPostCheck(_snes, __libmesh_petsc_snes_postcheck, this);
+  LIBMESH_CHKERRABORT(ierr);
+
+#else
+  // Pick the right version of the function name
+#if PETSC_VERSION_LESS_THAN(3,4,0)
+#  define SNESGETLINESEARCH SNESGetSNESLineSearch
+#else
+#  define SNESGETLINESEARCH SNESGetLineSearch
+#endif
+
+  SNESLineSearch linesearch;
+  PetscErrorCode ierr = SNESGETLINESEARCH(_snes, &linesearch);
+  LIBMESH_CHKERRABORT(ierr);
+
+  ierr = SNESLineSearchSetPostCheck(linesearch, __libmesh_petsc_snes_postcheck, this);
+  LIBMESH_CHKERRABORT(ierr);
+#endif
+  }
 }
 
 #if !PETSC_VERSION_LESS_THAN(3,3,0)
