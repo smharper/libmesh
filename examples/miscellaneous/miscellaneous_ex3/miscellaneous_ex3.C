@@ -73,7 +73,8 @@ using namespace libMesh;
  */
 class LaplaceYoung :
   public NonlinearImplicitSystem::ComputeResidual,
-  public NonlinearImplicitSystem::ComputeJacobian
+  public NonlinearImplicitSystem::ComputeJacobian,
+  public NonlinearImplicitSystem::ComputePostCheck
 {
 public:
   LaplaceYoung() :
@@ -94,6 +95,18 @@ public:
   virtual void jacobian (const NumericVector<Number>& X,
                          SparseMatrix<Number>& J,
                          NonlinearImplicitSystem& S);
+
+  /**
+   * Function which performs a postcheck on the solution.  This is
+   * really for demonstration purposes only, as it just degrades the
+   * rate of nonlinear convergence.
+   */
+  virtual void postcheck (const NumericVector<Number> & old_soln,
+                          NumericVector<Number> & search_direction,
+                          NumericVector<Number> & new_soln,
+                          bool & changed_search_direction,
+                          bool & changed_new_soln,
+                          NonlinearImplicitSystem & S);
 
 private:
   Real _kappa;
@@ -223,6 +236,7 @@ int main (int argc, char** argv)
   LaplaceYoung laplace_young;
   system.nonlinear_solver->residual_object = &laplace_young;
   system.nonlinear_solver->jacobian_object = &laplace_young;
+  system.nonlinear_solver->postcheck_object = &laplace_young;
 
   // Initialize the data structures for the equation system.
   equation_systems.init();
@@ -561,4 +575,17 @@ void LaplaceYoung::jacobian (const NumericVector<Number>& soln,
     }
 
   // That's it.
+}
+
+
+
+// Jacobian assembly function for the Laplace-Young system
+void LaplaceYoung::postcheck (const NumericVector<Number> & old_soln,
+                              NumericVector<Number> & search_direction,
+                              NumericVector<Number> & new_soln,
+                              bool & changed_search_direction,
+                              bool & changed_new_soln,
+                              NonlinearImplicitSystem & S)
+{
+  libMesh::out << "Called LaplaceYoung::postcheck()" << std::endl;
 }
