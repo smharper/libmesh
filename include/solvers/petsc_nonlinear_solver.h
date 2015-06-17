@@ -52,9 +52,9 @@ extern "C"
 
   PetscErrorCode __libmesh_petsc_snes_postcheck(
 #if PETSC_VERSION_LESS_THAN(3,3,0)
-                                                SNES, Vec /*x*/, Vec /*y*/, Vec w, void *context, PetscBool *changed_y, PetscBool *changed_w
+                                                SNES, Vec x, Vec y, Vec w, void *context, PetscBool *changed_y, PetscBool *changed_w
 #else
-                                                SNESLineSearch, Vec /*x*/, Vec /*y*/, Vec w, PetscBool *changed_y, PetscBool *changed_w, void *context
+                                                SNESLineSearch, Vec x, Vec y, Vec w, PetscBool *changed_y, PetscBool *changed_w, void *context
 #endif
                                                 );
 }

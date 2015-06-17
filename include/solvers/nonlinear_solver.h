@@ -220,8 +220,8 @@ public:
    * information about the calling sequence.
    */
   void (* postcheck) (const NumericVector<Number> & old_soln,
-                      NumericVector<Number> * search_direction,
-                      NumericVector<Number> * new_soln,
+                      NumericVector<Number> & search_direction,
+                      NumericVector<Number> & new_soln,
                       bool & changed_search_direction,
                       bool & changed_new_soln,
                       sys_type & S);
