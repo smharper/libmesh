@@ -974,8 +974,7 @@ void RBConstruction::assemble_all_output_vectors()
     }
 }
 
-Real RBConstruction::train_reduced_basis(const std::string& directory_name,
-                                         const bool resize_rb_eval_data)
+Real RBConstruction::train_reduced_basis(const bool resize_rb_eval_data)
 {
   START_LOG("train_reduced_basis()", "RBConstruction");
 

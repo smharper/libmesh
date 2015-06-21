@@ -154,14 +154,13 @@ public:
    * snapshot.
    *
    * \p resize_rb_eval_data is a boolean flag to indicate whether or not we
-   * call rb_eval->resize_data_structures(Nmax). True by default, by we may
+   * call rb_eval->resize_data_structures(Nmax). True by default, but we may
    * set it to false if, for example, we are continuing from a previous
    * training run and don't want to clobber the existing rb_eval data.
    *
    * @returns the final maximum a posteriori error bound on the training set.
    */
-  virtual Real train_reduced_basis(const std::string& directory_name = "offline_data",
-                                   const bool resize_rb_eval_data=true);
+  virtual Real train_reduced_basis(const bool resize_rb_eval_data=true);
 
   /**
    * (i) Compute the a posteriori error bound for each set of parameters
