@@ -60,7 +60,9 @@ AC_DEFUN([CONFIGURE_CAPNPROTO],
 
        # Check for existence of a header file in the specified location
        capnprotoincFound=no;
-       AC_CHECK_FILE($CAPNPROTO_INC/capnp/common.h, capnprotoincFound=yes)
+       if (test -r $CAPNPROTO_INC/capnp/common.h) ; then
+         capnprotoincFound=yes
+       fi
 
        if (test $capnprotoincFound = no); then
          AC_MSG_RESULT(CAPNPROTO header files not found!)
