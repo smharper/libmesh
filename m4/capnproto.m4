@@ -12,13 +12,12 @@ AC_DEFUN([CONFIGURE_CAPNPROTO],
   AC_ARG_ENABLE(capnproto,
                 AS_HELP_STRING([--disable-capnproto],
                                [build without Cap'n Proto support]),
-		[case "${enableval}" in
-		  yes)  enablecapnproto=yes ;;
-		   no)  enablecapnproto=no ;;
- 		    *)  AC_MSG_ERROR(bad value ${enableval} for --enable-capnproto) ;;
-		 esac],
-		 [enablecapnproto=$enableoptional])
-
+                [case "${enableval}" in
+                  yes) enablecapnproto=yes ;;
+                   no) enablecapnproto=no ;;
+                    *) AC_MSG_ERROR(bad value ${enableval} for --enable-capnproto) ;;
+                 esac],
+                [enablecapnproto=$enableoptional])
 
   if (test $enablecapnproto = yes); then
 
