@@ -211,6 +211,26 @@ void load_rb_scm_evaluation_data(
   RBData::RBSCMEvaluation::Reader& rb_scm_eval_reader);
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
 
+/**
+ * Helper function that reads either real or complex numbers, based on
+ * the libMesh config options.
+ */
+template <typename T>
+inline Number load_scalar_value(const T& value);
+
+/**
+ * Helper function that loads point data.
+ */
+void load_point(RBData::Point3D::Reader point_reader, Point& point);
+
+/**
+ * Helper function that loads element data.
+ */
+void load_elem_into_mesh(
+  RBData::MeshElem::Reader mesh_elem_reader,
+  libMesh::Elem* elem,
+  libMesh::SerialMesh& mesh);
+
 } // namespace RBDataDeserialization
 
 } // namespace libMesh

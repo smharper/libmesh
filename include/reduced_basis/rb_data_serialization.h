@@ -209,6 +209,25 @@ void add_rb_scm_evaluation_data_to_builder(
   RBData::RBSCMEvaluation::Builder& rb_scm_eval_builder);
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
 
+/**
+ * Helper function that sets either real or complex numbers, based on
+ * the libMesh config options.
+ */
+template <typename T, typename U>
+void set_scalar_in_list(T list, unsigned int i, U value);
+
+/**
+ * Helper function that adds point data.
+ */
+void add_point_to_builder(
+  const Point& point, RBData::Point3D::Builder point_builder);
+
+/**
+ * Helper function that adds element data.
+ */
+void add_elem_to_builder(
+  const libMesh::Elem& elem, RBData::MeshElem::Builder mesh_elem_builder);
+
 } // namespace RBDataSerialization
 
 } // namespace libMesh

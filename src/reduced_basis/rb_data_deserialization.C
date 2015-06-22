@@ -24,74 +24,6 @@ namespace libMesh
 namespace RBDataDeserialization
 {
 
-// ---- Helper functions (BEGIN) ----
-
-// anonymous namespace for helper functions
-namespace
-{
-
-/**
- * Helper function that reads either real or complex numbers, based on
- * the libMesh config options.
- */
-template <typename T>
-inline Number load_scalar_value(const T& value)
-{
-#ifdef LIBMESH_USE_COMPLEX_NUMBERS
-  return Number(value.getReal(), value.getImag());
-#else
-  return value;
-#endif
-}
-
-
-void load_point(RBData::Point3D::Reader point_reader, Point& point)
-{
-  point(0) = point_reader.getX();
-  if(LIBMESH_DIM >= 2)
-  {
-    point(1) = point_reader.getY();
-  }
-  if(LIBMESH_DIM >= 3)
-  {
-    point(2) = point_reader.getZ();
-  }
-}
-
-
-void load_elem_into_mesh(
-  RBData::MeshElem::Reader mesh_elem_reader,
-  libMesh::Elem* elem,
-  libMesh::SerialMesh& mesh)
-{
-  auto mesh_elem_point_list = mesh_elem_reader.getPoints();
-  unsigned int n_points = mesh_elem_point_list.size();
-
-  if(n_points != elem->n_nodes())
-  {
-    libmesh_error_msg("Wrong number of nodes for element type");
-  }
-
-  for(unsigned int i=0; i < n_points; ++i)
-  {
-    libMesh::Node* node = new libMesh::Node(mesh_elem_point_list[i].getX(),
-                                            mesh_elem_point_list[i].getY(),
-                                            mesh_elem_point_list[i].getZ());
-
-    mesh.add_node(node);
-
-    elem->set_node(i) = node;
-  }
-  
-  elem->subdomain_id() = mesh_elem_reader.getSubdomainId();
-  
-  mesh.add_elem(elem);
-}
-
-}
-
-// ---- Helper functions (END) ----
-
 // ---- RBEvaluationDeserialization (BEGIN) ----
 
 RBEvaluationDeserialization::RBEvaluationDeserialization(RBEvaluation& rb_eval)
@@ -960,6 +892,61 @@ void load_rb_scm_evaluation_data(
 
 }
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
+
+
+template <typename T>
+inline Number load_scalar_value(const T& value)
+{
+#ifdef LIBMESH_USE_COMPLEX_NUMBERS
+  return Number(value.getReal(), value.getImag());
+#else
+  return value;
+#endif
+}
+
+
+void load_point(RBData::Point3D::Reader point_reader, Point& point)
+{
+  point(0) = point_reader.getX();
+  if(LIBMESH_DIM >= 2)
+  {
+    point(1) = point_reader.getY();
+  }
+  if(LIBMESH_DIM >= 3)
+  {
+    point(2) = point_reader.getZ();
+  }
+}
+
+
+void load_elem_into_mesh(
+  RBData::MeshElem::Reader mesh_elem_reader,
+  libMesh::Elem* elem,
+  libMesh::SerialMesh& mesh)
+{
+  auto mesh_elem_point_list = mesh_elem_reader.getPoints();
+  unsigned int n_points = mesh_elem_point_list.size();
+
+  if(n_points != elem->n_nodes())
+  {
+    libmesh_error_msg("Wrong number of nodes for element type");
+  }
+
+  for(unsigned int i=0; i < n_points; ++i)
+  {
+    libMesh::Node* node = new libMesh::Node(mesh_elem_point_list[i].getX(),
+                                            mesh_elem_point_list[i].getY(),
+                                            mesh_elem_point_list[i].getZ());
+
+    mesh.add_node(node);
+
+    elem->set_node(i) = node;
+  }
+  
+  elem->subdomain_id() = mesh_elem_reader.getSubdomainId();
+  
+  mesh.add_elem(elem);
+}
 
 // ---- Helper functions for adding data to capnp Builders (END) ----
 

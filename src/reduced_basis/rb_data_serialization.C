@@ -22,62 +22,6 @@ namespace libMesh
 namespace RBDataSerialization
 {
 
-// ---- Helper functions (BEGIN) ----
-
-// anonymous namespace for locally-accessible helper functions
-namespace
-{
-
-/**
- * Helper function that sets either real or complex numbers, based on
- * the libMesh config options.
- */
-template <typename T, typename U>
-void set_scalar_in_list(T list, unsigned int i, U value)
-{
-#ifdef LIBMESH_USE_COMPLEX_NUMBERS
-  list[i].setReal(std::real(value));
-  list[i].setImag(std::imag(value));
-#else
-  list.set(i, value);
-#endif
-}  
-
-/**
- * Helper function that adds point data.
- */
-void add_point_to_builder(const Point& point, RBData::Point3D::Builder point_builder)
-{
-  point_builder.setX(point(0));
-  if(LIBMESH_DIM >= 2)
-  {
-    point_builder.setY(point(1));
-  }
-  if(LIBMESH_DIM >= 3)
-  {
-    point_builder.setZ(point(2));
-  }
-}
-
-void add_elem_to_builder(const libMesh::Elem& elem, RBData::MeshElem::Builder mesh_elem_builder)
-{
-  std::string elem_type_string = libMesh::Utility::enum_to_string(elem.type());
-  
-  mesh_elem_builder.setType(elem_type_string.c_str());
-  mesh_elem_builder.setSubdomainId(elem.subdomain_id());
-  
-  unsigned int n_points = elem.n_nodes();
-  auto mesh_elem_point_list = mesh_elem_builder.initPoints(n_points);
-    
-  for(unsigned int j(0); j < n_points; ++j)
-    add_point_to_builder(*elem.get_node(j), mesh_elem_point_list[j]);  
-}
-
-}
-
-// ---- Helper functions (END) ----
-
-
 // ---- RBEvaluationSerialization (BEGIN) ----
 
 RBEvaluationSerialization::RBEvaluationSerialization(RBEvaluation& rb_eval)
@@ -830,6 +774,50 @@ void add_rb_scm_evaluation_data_to_builder(
   }
 }
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
+
+/**
+ * Helper function that sets either real or complex numbers, based on
+ * the libMesh config options.
+ */
+template <typename T, typename U>
+void set_scalar_in_list(T list, unsigned int i, U value)
+{
+#ifdef LIBMESH_USE_COMPLEX_NUMBERS
+  list[i].setReal(std::real(value));
+  list[i].setImag(std::imag(value));
+#else
+  list.set(i, value);
+#endif
+}  
+
+void add_point_to_builder(const Point& point, RBData::Point3D::Builder point_builder)
+{
+  point_builder.setX(point(0));
+  if(LIBMESH_DIM >= 2)
+  {
+    point_builder.setY(point(1));
+  }
+  if(LIBMESH_DIM >= 3)
+  {
+    point_builder.setZ(point(2));
+  }
+}
+
+void add_elem_to_builder(const libMesh::Elem& elem, RBData::MeshElem::Builder mesh_elem_builder)
+{
+  std::string elem_type_string = libMesh::Utility::enum_to_string(elem.type());
+
+  mesh_elem_builder.setType(elem_type_string.c_str());
+  mesh_elem_builder.setSubdomainId(elem.subdomain_id());
+
+  unsigned int n_points = elem.n_nodes();
+  auto mesh_elem_point_list = mesh_elem_builder.initPoints(n_points);
+
+  for(unsigned int j=0; j < n_points; ++j)
+  {
+    add_point_to_builder(*elem.get_node(j), mesh_elem_point_list[j]);
+  }
+}
 
 // ---- Helper functions for adding data to capnp Builders (END) ----
 
