@@ -36450,14 +36450,13 @@ fi
   # Check whether --enable-capnproto was given.
 if test "${enable_capnproto+set}" = set; then :
   enableval=$enable_capnproto; case "${enableval}" in
-		  yes)  enablecapnproto=yes ;;
-		   no)  enablecapnproto=no ;;
- 		    *)  as_fn_error $? "bad value ${enableval} for --enable-capnproto" "$LINENO" 5 ;;
-		 esac
+                  yes) enablecapnproto=yes ;;
+                   no) enablecapnproto=no ;;
+                    *) as_fn_error $? "bad value ${enableval} for --enable-capnproto" "$LINENO" 5 ;;
+                 esac
 else
   enablecapnproto=$enableoptional
 fi
-
 
 
   if (test $enablecapnproto = yes); then
@@ -36509,27 +36508,9 @@ fi
 
        # Check for existence of a header file in the specified location
        capnprotoincFound=no;
-       as_ac_File=`$as_echo "ac_cv_file_$CAPNPROTO_INC/capnp/common.h" | $as_tr_sh`
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CAPNPROTO_INC/capnp/common.h" >&5
-$as_echo_n "checking for $CAPNPROTO_INC/capnp/common.h... " >&6; }
-if eval \${$as_ac_File+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "$CAPNPROTO_INC/capnp/common.h"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-eval ac_res=\$$as_ac_File
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
-  capnprotoincFound=yes
-fi
-
+       if (test -r $CAPNPROTO_INC/capnp/common.h) ; then
+         capnprotoincFound=yes
+       fi
 
        if (test $capnprotoincFound = no); then
          { $as_echo "$as_me:${as_lineno-$LINENO}: result: CAPNPROTO header files not found!" >&5
@@ -36560,11 +36541,11 @@ $as_echo "<<< Configuring library with CAPNPROTO support >>>" >&6; }
 
 
 
-if (test x$enablenlopt = xyes); then
+if (test x$enablecapnproto = xyes); then
   libmesh_optional_INCLUDES="$CAPNPROTO_INCLUDE $libmesh_optional_INCLUDES"
   libmesh_optional_LIBS="$CAPNPROTO_LIBRARY $libmesh_optional_LIBS"
 fi
- if test x$enablenlopt = xyes; then
+ if test x$enablecapnproto = xyes; then
   LIBMESH_ENABLE_CAPNPROTO_TRUE=
   LIBMESH_ENABLE_CAPNPROTO_FALSE='#'
 else
