@@ -59,8 +59,6 @@ void RBEvaluationDeserialization::read_from_file(
 {
   START_LOG("read_from_file()", "RBEvaluationDeserialization");
 
-  libMesh::out << "Reading RBEvaluation capnp buffer from " <<  path << std::endl;
-
   int fd = open(path.c_str(), O_RDONLY);
   if(!fd)
   {
@@ -105,8 +103,6 @@ void TransientRBEvaluationDeserialization::read_from_file(
   bool read_error_bound_data)
 {
   START_LOG("read_from_file()", "TransientRBEvaluationDeserialization");
-
-  libMesh::out << "Reading TransientRBEvaluation capnp buffer from " <<  path << std::endl;
 
   int fd = open(path.c_str(), O_RDONLY);
   if(!fd)
@@ -157,8 +153,6 @@ void RBEIMEvaluationDeserialization::read_from_file(
 {
   START_LOG("read_from_file()", "RBEIMEvaluationDeserialization");
 
-  libMesh::out << "Reading RBEIMEvaluation capnp buffer from " <<  path << std::endl;
-
   int fd = open(path.c_str(), O_RDONLY);
   if(!fd)
   {
@@ -207,8 +201,6 @@ void RBSCMEvaluationDeserialization::read_from_file(
   const std::string& path)
 {
   START_LOG("read_from_file()", "RBSCMEvaluationDeserialization");
-
-  libMesh::out << "Reading RBSCMEvaluation capnp buffer from " <<  path << std::endl;
 
   int fd = open(path.c_str(), O_RDONLY);
   if(!fd)

@@ -59,8 +59,6 @@ void RBEvaluationSerialization::write_to_file(
 {
   START_LOG("write_to_file()", "RBEvaluationSerialization");
 
-  libMesh::out << "Writing RBEvaluation capnp buffer to " <<  path << std::endl;
-
   if(_rb_eval.comm().rank() == 0)
   {
     capnp::MallocMessageBuilder message;
@@ -113,9 +111,6 @@ void TransientRBEvaluationSerialization::write_to_file(
   const std::string& path)
 {
   START_LOG("write_to_file()", "TransientRBEvaluationSerialization");
-
-  libMesh::out << "Writing TransientRBEvaluation capnp buffer to "
-    <<  path << std::endl;
 
   if(_trans_rb_eval.comm().rank() == 0)
   {
@@ -173,8 +168,6 @@ void RBEIMEvaluationSerialization::write_to_file(
   const std::string& path)
 {
   START_LOG("write_to_file()", "RBEIMEvaluationSerialization");
-
-  libMesh::out << "Writing RBEIMEvaluation capnp buffer to " <<  path << std::endl;
 
   if(_rb_eim_eval.comm().rank() == 0)
   {
@@ -235,8 +228,6 @@ void RBSCMEvaluationSerialization::write_to_file(
   const std::string& path)
 {
   START_LOG("write_to_file()", "RBSCMEvaluationSerialization");
-
-  libMesh::out << "Writing RBSCMEvaluationSerialization capnp buffer to " <<  path << std::endl;
 
   if(_rb_scm_eval.comm().rank() == 0)
   {
