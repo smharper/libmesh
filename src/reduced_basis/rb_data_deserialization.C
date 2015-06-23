@@ -21,6 +21,25 @@
 namespace libMesh
 {
 
+namespace
+{
+
+/**
+ * Helper function that reads either real or complex numbers, based on
+ * the libMesh config options.
+ */
+template <typename T>
+Number load_scalar_value(const T& value)
+{
+#ifdef LIBMESH_USE_COMPLEX_NUMBERS
+  return Number(value.getReal(), value.getImag());
+#else
+  return value;
+#endif
+}
+
+}
+
 namespace RBDataDeserialization
 {
 
@@ -893,16 +912,6 @@ void load_rb_scm_evaluation_data(
 }
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
 
-
-template <typename T>
-inline Number load_scalar_value(const T& value)
-{
-#ifdef LIBMESH_USE_COMPLEX_NUMBERS
-  return Number(value.getReal(), value.getImag());
-#else
-  return value;
-#endif
-}
 
 
 void load_point(RBData::Point3D::Reader point_reader, Point& point)

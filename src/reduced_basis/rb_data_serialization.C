@@ -19,6 +19,26 @@
 namespace libMesh
 {
 
+namespace
+{
+
+/**
+ * Helper function that sets either real or complex numbers, based on
+ * the libMesh config options.
+ */
+template <typename T, typename U>
+void set_scalar_in_list(T list, unsigned int i, U value)
+{
+#ifdef LIBMESH_USE_COMPLEX_NUMBERS
+  list[i].setReal(std::real(value));
+  list[i].setImag(std::imag(value));
+#else
+  list.set(i, value);
+#endif
+}
+
+}
+
 namespace RBDataSerialization
 {
 
@@ -774,21 +794,6 @@ void add_rb_scm_evaluation_data_to_builder(
   }
 }
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
-
-/**
- * Helper function that sets either real or complex numbers, based on
- * the libMesh config options.
- */
-template <typename T, typename U>
-void set_scalar_in_list(T list, unsigned int i, U value)
-{
-#ifdef LIBMESH_USE_COMPLEX_NUMBERS
-  list[i].setReal(std::real(value));
-  list[i].setImag(std::imag(value));
-#else
-  list.set(i, value);
-#endif
-}  
 
 void add_point_to_builder(const Point& point, RBData::Point3D::Builder point_builder)
 {

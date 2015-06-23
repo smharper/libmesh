@@ -212,13 +212,6 @@ void load_rb_scm_evaluation_data(
 #endif // LIBMESH_HAVE_SLEPC && LIBMESH_HAVE_GLPK
 
 /**
- * Helper function that reads either real or complex numbers, based on
- * the libMesh config options.
- */
-template <typename T>
-inline Number load_scalar_value(const T& value);
-
-/**
  * Helper function that loads point data.
  */
 void load_point(RBData::Point3D::Reader point_reader, Point& point);
