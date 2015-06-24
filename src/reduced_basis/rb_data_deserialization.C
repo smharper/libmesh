@@ -355,26 +355,21 @@ void load_rb_evaluation_data(
               load_scalar_value(aq_aq_innerprods_list[offset]);
           }
     }
-  
-  }
 
-  // Output dual inner-product data, and output vectors
-  {
-    unsigned int n_outputs = rb_theta_expansion.get_n_outputs();
-    auto output_innerprod_outer = rb_evaluation_reader.getOutputDualInnerprods();
-    auto output_vector_outer = rb_evaluation_reader.getOutputVectors();
-
-    if( (output_innerprod_outer.size() != n_outputs) ||
-        (output_vector_outer.size() != n_outputs) )
+    // Output dual inner-product data
     {
-      libmesh_error_msg("Incorrect number of outputs detected in the buffer");
-    }
+      unsigned int n_outputs = rb_theta_expansion.get_n_outputs();
+      auto output_innerprod_outer = rb_evaluation_reader.getOutputDualInnerprods();
 
-    for(unsigned int output_id=0; output_id<n_outputs; ++output_id)
-    {
-      unsigned int n_output_terms = rb_theta_expansion.get_n_output_terms(output_id);
-      
+      if(output_innerprod_outer.size() != n_outputs)
       {
+        libmesh_error_msg("Incorrect number of outputs detected in the buffer");
+      }
+
+      for(unsigned int output_id=0; output_id<n_outputs; ++output_id)
+      {
+        unsigned int n_output_terms = rb_theta_expansion.get_n_output_terms(output_id);
+
         unsigned int Q_l_hat = n_output_terms*(n_output_terms+1)/2;
         auto output_innerprod_inner = output_innerprod_outer[output_id];
 
@@ -389,28 +384,42 @@ void load_rb_evaluation_data(
             load_scalar_value(output_innerprod_inner[q]);
         }
       }
+    }
+  }
 
+  // Output vectors
+  {
+    unsigned int n_outputs = rb_theta_expansion.get_n_outputs();
+    auto output_vector_outer = rb_evaluation_reader.getOutputVectors();
+
+    if(output_vector_outer.size() != n_outputs)
+    {
+      libmesh_error_msg("Incorrect number of outputs detected in the buffer");
+    }
+
+    for(unsigned int output_id=0; output_id<n_outputs; ++output_id)
+    {
+      unsigned int n_output_terms = rb_theta_expansion.get_n_output_terms(output_id);
+
+      auto output_vector_middle = output_vector_outer[output_id];
+      if(output_vector_middle.size() != n_output_terms)
       {
-        auto output_vector_middle = output_vector_outer[output_id];
-        if(output_vector_middle.size() != n_output_terms)
+        libmesh_error_msg("Incorrect number of output terms detected in the buffer");
+      }
+
+      for(unsigned int q_l=0; q_l<n_output_terms; ++q_l)
+      {
+        auto output_vectors_inner_list = output_vector_middle[q_l];
+
+        if(output_vectors_inner_list.size() != n_bfs)
         {
           libmesh_error_msg("Incorrect number of output terms detected in the buffer");
         }
 
-        for(unsigned int q_l=0; q_l<n_output_terms; ++q_l)
+        for(unsigned int j=0; j<n_bfs; ++j)
         {
-          auto output_vectors_inner_list = output_vector_middle[q_l];
-
-          if(output_vectors_inner_list.size() != n_bfs)
-          {
-            libmesh_error_msg("Incorrect number of output terms detected in the buffer");
-          }
-
-          for(unsigned int j=0; j < n_bfs; ++j)
-          {
-            rb_evaluation.RB_output_vectors[output_id][q_l](j) =
-              load_scalar_value(output_vectors_inner_list[j]);
-          }
+          rb_evaluation.RB_output_vectors[output_id][q_l](j) =
+            load_scalar_value(output_vectors_inner_list[j]);
         }
       }
     }
