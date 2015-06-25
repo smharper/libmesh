@@ -282,11 +282,14 @@ void add_parameter_ranges_to_builder(
     unsigned int count = 0;
     for(const auto& parameter_name : parameter_names)
     {
-      names.set(count, parameter_name);
-      mins.set(count, parameters_min.get_value(parameter_name));
-      maxs.set(count, parameters_max.get_value(parameter_name));
+      if(!rb_evaluation.is_discrete_parameter(parameter_name))
+      {
+        names.set(count, parameter_name);
+        mins.set(count, parameters_min.get_value(parameter_name));
+        maxs.set(count, parameters_max.get_value(parameter_name));
 
-      ++count;
+        ++count;
+      }
     }
 
     if(count != n_continuous_parameters)
